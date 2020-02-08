@@ -9,5 +9,6 @@ class CreateMovies < ActiveRecord::Migration
       # of when movies are added or modified:
       t.timestamps
     end
+    #add_column :movies, :listof_ratings, :integer
   end
 end

@@ -3,7 +3,7 @@ class MoviesController < ApplicationController
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
-
+  
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -11,8 +11,13 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.order(params[:order])
+    #@movies = Movie.order("title")
+    #@checked_ratings = params[:ratings]#.keys #==> this works, but if null breaks the whole thing. works without keys, beacuse keys breaks on undefined
+    @all_ratings = Movie.listof_ratings.keys
+    @checked_ratings = Movie.with_ratings(params[:ratings])
+    @movies = Movie.where(rating: @checked_ratings).order(params[:order])
     @order = params[:order]
+    
   end
 
   def new
