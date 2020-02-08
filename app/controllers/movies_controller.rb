@@ -11,13 +11,20 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #session.delete(:order)
     #@movies = Movie.order("title")
     #@checked_ratings = params[:ratings]#.keys #==> this works, but if null breaks the whole thing. works without keys, beacuse keys breaks on undefined
-    @all_ratings = Movie.listof_ratings.keys
-    @checked_ratings = Movie.with_ratings(params[:ratings])
-    @movies = Movie.where(rating: @checked_ratings).order(params[:order])
-    @order = params[:order]
     
+    @all_ratings = Movie.listof_ratings.keys
+    if params[:order].present?
+      session[:order] = params[:order]
+    end
+    if params[:ratings].present?
+      session[:ratings] = params[:ratings]
+    end
+    @checked_ratings = Movie.with_ratings(session[:ratings])
+    @movies = Movie.where(rating: @checked_ratings).order(session[:order])
+   
   end
 
   def new
@@ -42,6 +49,8 @@ class MoviesController < ApplicationController
   end
 
   def destroy
+    session.delete(:order)
+    session.delete(:ratings)
     @movie = Movie.find(params[:id])
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
